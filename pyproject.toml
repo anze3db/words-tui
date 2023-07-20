@@ -1,0 +1,5 @@
+[project]
+name = "write-tui"
+classifiers = ["Private :: Do Not Upload"]
+version = "23.0"
+dependencies = ["textual"]
