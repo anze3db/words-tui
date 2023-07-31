@@ -6,8 +6,9 @@ build-backend = "hatchling.build"
 name = "write-tui"
 classifiers = ["Private :: Do Not Upload"]
 version = "23.0"
-dependencies = ["textual", "textual-dev", "peewee"]
+dependencies = ["textual", "peewee", "tree-sitter"]
+
 [project.optional-dependencies]
-dev = ["black", "ruff", "mypy"]
+dev = ["black", "ruff", "mypy", "textual-dev"]
 
 
