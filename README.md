@@ -2,7 +2,7 @@
 
 A TUI (Text User Interface) app for daily writing.
 
-## Using locally
+## Try it out!
 
 ```
 pip -m install requirements.txt
