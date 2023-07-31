@@ -1,5 +1,13 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "write-tui"
 classifiers = ["Private :: Do Not Upload"]
 version = "23.0"
-dependencies = ["textual"]
+dependencies = ["textual", "textual-dev", "peewee"]
+[project.optional-dependencies]
+dev = ["black", "ruff", "mypy"]
+
+
