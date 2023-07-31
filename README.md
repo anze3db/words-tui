@@ -10,4 +10,4 @@ python app.py
 ```
 
 
-<video src='https://github.com/anze3db/textual-writer/assets/513444/6c85f4fc-ae45-475d-9ed0-3d1b12031cf0'></video>
+<video src='https://github.com/anze3db/textual-writer/assets/513444/6c85f4fc-ae45-475d-9ed0-3d1b12031cf0' />
