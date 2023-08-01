@@ -298,6 +298,8 @@ TextEditor > .text-editor--selection {
     def load_text(self, text: str) -> None:
         """Load text from a string into the editor."""
         lines = text.splitlines(keepends=False)
+        if not text:
+            text = "\n"
         if text[-1] == "\n":
             lines.append("")
         self.load_lines(lines)
