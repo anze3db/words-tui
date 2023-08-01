@@ -1,5 +1,4 @@
 import datetime
-import textwrap
 from pathlib import Path
 
 from peewee import (
@@ -75,17 +74,20 @@ class WriteTui(App):
     CSS_PATH = "app.css"
 
     def on_mount(self) -> None:
-        self.updater = self.set_interval(1, self.update_word_count)
         self.posts = Post.select().order_by(Post.created_date.desc()).limit(10)
+
+    def on_text_editor_changed(self, event: TextEditor.Changed) -> None:
+        self.update_word_count()
 
     def update_word_count(self) -> None:
         text_editor = self.query_one(TextEditor)
         sidebar = self.query_one("#sidebar")
-        text = "\n".join(
-            ["\n".join(textwrap.wrap(t, width=80)) for t in text_editor.document_lines]
-        )
+
+        text = "\n".join(text_editor.document_lines)
         todays_post.content = text
         todays_post.save()
+
+        text_editor.load_text(text)
 
         posts = Post.select().order_by(Post.created_date.desc()).limit(10)
 
