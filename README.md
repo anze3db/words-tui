@@ -5,7 +5,7 @@ A TUI (Text User Interface) app for daily writing.
 ## Try it out!
 
 ```
-pip -m install requirements.txt
+python -m pip install requirements.txt
 python app.py
 ```
 
