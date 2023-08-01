@@ -16,6 +16,7 @@ from textual._cells import cell_len
 from textual._types import Protocol
 from textual.binding import Binding
 from textual.geometry import Offset, Region, Size, Spacing, clamp
+from textual.message import Message
 from textual.reactive import Reactive, reactive
 from textual.scroll_view import ScrollView
 from textual.strip import Strip
@@ -205,6 +206,25 @@ TextEditor > .text-editor--selection {
     _document_size: Reactive[Size] = reactive(Size(), init=False)
     """Tracks the width of the document. Used to update virtual size. Do not
     update virtual size directly."""
+
+    @dataclass
+    class Changed(Message):
+        """Posted when the value changes.
+
+        Can be handled using `on_input_changed` in a subclass of `Input` or in a parent
+        widget in the DOM.
+        """
+
+        text_editor: TextEditor
+        """The `Input` widget that was changed."""
+
+        value: str
+        """The value that the input was changed to."""
+
+        @property
+        def control(self) -> TextEditor:
+            """Alias for self.input."""
+            return self.text_editor
 
     def __init__(
         self,
@@ -923,6 +943,7 @@ TextEditor > .text-editor--selection {
         self._refresh_size()
         if move_cursor:
             self.selection = Selection.cursor(cursor_destination)
+        self.post_message(self.Changed(self, ""))
 
     def _position_to_byte_offset(self, position: tuple[int, int]) -> int:
         """Given a document coordinate, return the byte offset of that coordinate."""
@@ -1039,6 +1060,7 @@ TextEditor > .text-editor--selection {
             # Move the cursor to the start of the deleted range
             self.selection = Selection.cursor((from_row, from_column))
 
+        self.post_message(self.Changed(self, ""))
         return deleted_text
 
     def action_delete_left(self) -> None:
