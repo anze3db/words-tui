@@ -1,4 +1,4 @@
-# Textual-Writer
+# Textual-Words
 
 A TUI (Text User Interface) app for daily writing.
 
