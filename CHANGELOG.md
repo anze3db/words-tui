@@ -7,6 +7,9 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 ## [Unreleased]
 
+### Added 
+* Changelog link to PyPI page
+
 ## [23.0] - 2023-08-02
 
 Initial Release!
