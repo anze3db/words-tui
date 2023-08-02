@@ -16,7 +16,7 @@
 
 ## 🎬 Demo
 
-https://github-production-user-asset-6210df.s3.amazonaws.com/513444/257317982-6c85f4fc-ae45-475d-9ed0-3d1b12031cf0
+https://github.com/anze3db/words-tui/assets/513444/a6a2d15c-f5ad-4e2a-a343-ffe7abfdb582
 
 ## Installation
 
