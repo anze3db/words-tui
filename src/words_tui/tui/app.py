@@ -10,7 +10,7 @@ from peewee import (
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Static
 
-from text_editor import TextEditor
+from words_tui.tui.text_editor import TextEditor
 
 db = SqliteDatabase(Path.home() / ".write-tui.db")
 db.connect()
@@ -28,9 +28,7 @@ class Post(BaseModel):
 
 db.create_tables([Post])
 posts = Post.select().order_by(Post.created_date.desc()).limit(10)
-todays_post = [
-    post for post in posts if post.created_date.date() == datetime.date.today()
-]
+todays_post = [post for post in posts if post.created_date.date() == datetime.date.today()]
 if not todays_post:
     todays_post = Post.create(content="_")
 else:
@@ -59,12 +57,10 @@ def get_post_summary(post: Post) -> str:
 
 
 def get_sidebar_text(posts: list[Post]) -> str:
-    return "[bold] # Date      Words/Goal[/bold]\n" + "\n".join(
-        map(get_post_summary, posts)
-    )
+    return "[bold] # Date      Words/Goal[/bold]\n" + "\n".join(map(get_post_summary, posts))
 
 
-class WriteTui(App):
+class WordsTui(App):
     """A Textual app for writing."""
 
     BINDINGS = [
@@ -107,5 +103,5 @@ class WriteTui(App):
 
 
 if __name__ == "__main__":
-    app = WriteTui()
+    app = WordsTui()
     app.run()
