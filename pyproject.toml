@@ -31,6 +31,7 @@ dependencies = [
 Documentation = "https://github.com/anze3db/words-tui#readme"
 Issues = "https://github.com/anze3db/words-tui/issues"
 Source = "https://github.com/anze3db/words-tui"
+Changelog = "https://github.com/anze3db/words-tui/blob/main/CHANGELOG.md"
 
 [project.scripts]
 words-tui = "words_tui.cli:words_tui"
