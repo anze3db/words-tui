@@ -1,38 +1,10 @@
 import datetime
-from pathlib import Path
 
-from peewee import (
-    DateTimeField,
-    Model,
-    SqliteDatabase,
-    TextField,
-)
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Static
 
+from words_tui.tui.db import Post
 from words_tui.tui.text_editor import TextEditor
-
-db = SqliteDatabase(Path.home() / ".write-tui.db")
-db.connect()
-
-
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-
-class Post(BaseModel):
-    content = TextField()
-    created_date = DateTimeField(default=datetime.datetime.now)
-
-
-db.create_tables([Post])
-posts = Post.select().order_by(Post.created_date.desc()).limit(10)
-todays_post = [post for post in posts if post.created_date.date() == datetime.date.today()]
-if not todays_post:
-    todays_post = Post.create(content="_")
-else:
-    todays_post = todays_post[0]
 
 
 def get_post_icon(post: Post) -> str:
@@ -69,10 +41,21 @@ class WordsTui(App):
 
     CSS_PATH = "app.css"
 
-    def on_mount(self) -> None:
-        self.posts = Post.select().order_by(Post.created_date.desc()).limit(10)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        # TODO: Find a better place for this
+        self.posts: list[Post] = Post.select().order_by(Post.created_date.desc()).limit(10)
+        todays_post: list[Post] = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
+        if todays_post:
+            self.todays_post = todays_post[0]
+        else:
+            self.todays_post = Post.create(content="_")
 
-    def on_text_editor_changed(self, event: TextEditor.Changed) -> None:
+        self.editor = TextEditor(id="editor")
+        self.editor.show_line_numbers = False
+        self.editor.load_text(self.todays_post.content)
+
+    def on_text_editor_changed(self, _: TextEditor.Changed) -> None:
         self.update_word_count()
 
     def update_word_count(self) -> None:
@@ -80,8 +63,8 @@ class WordsTui(App):
         sidebar = self.query_one("#sidebar")
 
         text = "\n".join(text_editor.document_lines)
-        todays_post.content = text
-        todays_post.save()
+        self.todays_post.content = text
+        self.todays_post.save()
 
         text_editor.load_text(text)
 
@@ -92,13 +75,8 @@ class WordsTui(App):
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
 
-        editor = TextEditor(id="editor")
-        posts = Post.select().order_by(Post.created_date.desc()).limit(10)
-        editor.show_line_numbers = False
-        editor.load_text(todays_post.content)
-
-        yield Static(get_sidebar_text(posts), id="sidebar")
-        yield editor
+        yield Static(get_sidebar_text(self.posts), id="sidebar")
+        yield self.editor
         yield Footer()
 
 
