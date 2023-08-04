@@ -44,12 +44,13 @@ class WordsTui(App):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # TODO: Find a better place for this
-        self.posts: list[Post] = Post.select().order_by(Post.created_date.desc()).limit(10)
+        self.posts: list[Post] = list(Post.select().order_by(Post.created_date.desc()).limit(10))
         todays_post: list[Post] = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
         if todays_post:
             self.todays_post = todays_post[0]
         else:
-            self.todays_post = Post.create(content="_")
+            self.todays_post = Post.create(content="")
+            self.posts.insert(0, self.todays_post)
 
         self.editor = TextEditor(id="editor")
         self.editor.show_line_numbers = False
@@ -65,8 +66,6 @@ class WordsTui(App):
         text = "\n".join(text_editor.document_lines)
         self.todays_post.content = text
         self.todays_post.save()
-
-        text_editor.load_text(text)
 
         posts = Post.select().order_by(Post.created_date.desc()).limit(10)
 
