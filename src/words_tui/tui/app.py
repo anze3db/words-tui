@@ -3,7 +3,7 @@ import datetime
 from textual.app import App, ComposeResult
 from textual.widgets import Footer, Static
 
-from words_tui.tui.db import Post
+from words_tui.tui.db import Post, get_posts
 from words_tui.tui.text_editor import TextEditor
 
 
@@ -29,6 +29,7 @@ def get_post_summary(post: Post) -> str:
 
 
 def get_sidebar_text(posts: list[Post]) -> str:
+    posts = get_posts()
     return "[bold] # Date      Words/Goal[/bold]\n" + "\n".join(map(get_post_summary, posts))
 
 
@@ -44,12 +45,12 @@ class WordsTui(App):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # TODO: Find a better place for this
-        self.posts: list[Post] = list(Post.select().order_by(Post.created_date.desc()).limit(10))
-        todays_post: list[Post] = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
+        self.posts = get_posts()
+        todays_post = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
         if todays_post:
-            self.todays_post = todays_post[0]
+            self.todays_post: Post = todays_post[0]
         else:
-            self.todays_post = Post.create(content="")
+            self.todays_post: Post = Post.create(content="")
             self.posts.insert(0, self.todays_post)
 
         self.editor = TextEditor(id="editor")
@@ -67,9 +68,7 @@ class WordsTui(App):
         self.todays_post.content = text
         self.todays_post.save()
 
-        posts = Post.select().order_by(Post.created_date.desc()).limit(10)
-
-        sidebar.update(get_sidebar_text(posts))
+        sidebar.update(get_sidebar_text())
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
