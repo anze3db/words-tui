@@ -28,7 +28,7 @@ def get_post_summary(post: Post) -> str:
     )
 
 
-def get_sidebar_text(posts: list[Post]) -> str:
+def get_sidebar_text() -> str:
     posts = get_posts()
     return "[bold] # Date      Words/Goal[/bold]\n" + "\n".join(map(get_post_summary, posts))
 
@@ -73,7 +73,7 @@ class WordsTui(App):
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
 
-        yield Static(get_sidebar_text(self.posts), id="sidebar")
+        yield Static(get_sidebar_text(), id="sidebar")
         yield self.editor
         yield Footer()
 
