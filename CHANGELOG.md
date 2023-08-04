@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [23.2] - 2023-08-04
+
+A small bug fix release.
+
+### Fixed
+* Fix saving of posts
+
 ## [23.1] - 2023-08-04
 
 A small update to fix a few bugs and add a changelog link to the PyPI page.
