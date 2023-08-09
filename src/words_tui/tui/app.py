@@ -46,16 +46,24 @@ class WordsTui(App):
         super().__init__(*args, **kwargs)
         # TODO: Find a better place for this
         self.posts = get_posts()
-        todays_post = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
-        if todays_post:
-            self.todays_post: Post = todays_post[0]
+
+        if not self.posts:
+            # When we first initialize the app there are no posts in the database, so create the first one:
+            self.posts.insert(0, Post.create(content="", created_date=datetime.datetime.now()))
         else:
-            self.todays_post: Post = Post.create(content="")
-            self.posts.insert(0, self.todays_post)
+            latest_post = self.posts[0]
+            missing_days = (datetime.date.today() - latest_post.created_date.date()).days
+            start_date = latest_post.created_date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+            for day in range(missing_days):
+                self.posts.insert(0, Post.create(content="", created_date=start_date + datetime.timedelta(days=day + 1)))
+
+        current_post = [post for post in self.posts if post.created_date.date() == datetime.date.today()]
+        self.current_post: Post = current_post[0]
 
         self.editor = TextEditor(id="editor")
         self.editor.show_line_numbers = False
-        self.editor.load_text(self.todays_post.content)
+        self.editor.load_text(self.current_post.content)
 
     def on_text_editor_changed(self, _: TextEditor.Changed) -> None:
         self.update_word_count()
@@ -65,8 +73,8 @@ class WordsTui(App):
         sidebar = self.query_one("#sidebar")
 
         text = "\n".join(text_editor.document_lines)
-        self.todays_post.content = text
-        self.todays_post.save()
+        self.current_post.content = text
+        self.current_post.save()
 
         sidebar.update(get_sidebar_text())
 
