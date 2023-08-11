@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Calendar Versioning](https://calver.org).
 
+## [23.3] - 2023-08-11
+
+You can now configure the daily words goal setting.
+
+### Added
+* Ability to configure the daily words goal
+
+## Fixed
+* Show missed days in sidebar
+
 ## [23.2] - 2023-08-04
 
 A small bug fix release.
