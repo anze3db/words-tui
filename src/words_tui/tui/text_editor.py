@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import ClassVar, NamedTuple
+from typing import ClassVar, NamedTuple, Optional
 
 from rich.cells import get_character_cell_size
 from rich.style import Style
@@ -70,7 +70,7 @@ class Selection(NamedTuple):
     end: tuple[int, int] = (0, 0)
 
     @classmethod
-    def cursor(cls, position: tuple[int, int]) -> "Selection":
+    def cursor(cls, position: tuple[int, int]) -> Selection:
         """Create a Selection with the same start and end point."""
         return cls(position, position)
 
@@ -101,9 +101,7 @@ class Insert(NamedTuple):
 
     def do(self, editor: TextEditor) -> None:
         if self.text:
-            editor._insert_text_range(
-                self.text, self.from_position, self.to_position, self.move_cursor
-            )
+            editor._insert_text_range(self.text, self.from_position, self.to_position, self.move_cursor)
 
     def undo(self, editor: TextEditor) -> None:
         """Undo the action."""
@@ -117,9 +115,7 @@ class Delete:
 
     def do(self, editor: TextEditor) -> None:
         """Do the action."""
-        self.deleted_text = editor._delete_range(
-            self.from_position, self.to_position, self.cursor_destination
-        )
+        self.deleted_text = editor._delete_range(self.from_position, self.to_position, self.cursor_destination)
         return self.deleted_text
 
     def undo(self, editor: TextEditor) -> None:
@@ -176,24 +172,16 @@ TextEditor > .text-editor--selection {
         Binding("shift+left", "cursor_left_select", "cursor left select", show=False),
         Binding("ctrl+left", "cursor_left_word", "cursor left word", show=False),
         Binding("right", "cursor_right", "cursor right", show=False),
-        Binding(
-            "shift+right", "cursor_right_select", "cursor right select", show=False
-        ),
+        Binding("shift+right", "cursor_right_select", "cursor right select", show=False),
         Binding("ctrl+right", "cursor_right_word", "cursor right word", show=False),
         Binding("home,ctrl+a", "cursor_line_start", "cursor line start", show=False),
         Binding("end,ctrl+e", "cursor_line_end", "cursor line end", show=False),
         Binding("backspace", "delete_left", "delete left", show=False),
-        Binding(
-            "ctrl+w", "delete_word_left", "delete left to start of word", show=False
-        ),
+        Binding("ctrl+w", "delete_word_left", "delete left to start of word", show=False),
         Binding("ctrl+d", "delete_right", "delete right", show=False),
-        Binding(
-            "ctrl+f", "delete_word_right", "delete right to start of word", show=False
-        ),
+        Binding("ctrl+f", "delete_word_right", "delete right to start of word", show=False),
         Binding("ctrl+x", "delete_line", "delete line", show=False),
-        Binding(
-            "ctrl+u", "delete_to_start_of_line", "delete to line start", show=False
-        ),
+        Binding("ctrl+u", "delete_to_start_of_line", "delete to line start", show=False),
         Binding("ctrl+k", "delete_to_end_of_line", "delete to line end", show=False),
     ]
 
@@ -309,7 +297,7 @@ TextEditor > .text-editor--selection {
         if row_out_of_bounds or column_out_of_bounds:
             return_value = None
         elif column == len(lines[row]) and row < len(lines):
-            return_value = "\n".encode("utf8")
+            return_value = b"\n"
         else:
             return_value = lines[row][column].encode("utf8")
         # print(f"(point={point!r}) (offset={byte_offset!r}) {return_value!r}")
@@ -406,9 +394,7 @@ TextEditor > .text-editor--selection {
                         end=len(line_string),
                     )
                 elif document_y == selection_bottom_row:
-                    line_text.stylize_before(
-                        selection_style, end=selection_bottom_column
-                    )
+                    line_text.stylize_before(selection_style, end=selection_bottom_column)
                 else:
                     line_text.stylize_before(selection_style, end=len(line_string))
 
@@ -416,17 +402,13 @@ TextEditor > .text-editor--selection {
         if end_row == document_y:
             cursor_style = self.get_component_rich_style("text-editor--cursor")
             line_text.stylize(cursor_style, end_column, end_column + 1)
-            active_line_style = self.get_component_rich_style(
-                "text-editor--active-line"
-            )
+            active_line_style = self.get_component_rich_style("text-editor--active-line")
             line_text.stylize_before(active_line_style)
 
         # Show the gutter
         if self.show_line_numbers:
             if end_row == document_y:
-                gutter_style = self.get_component_rich_style(
-                    "text-editor--active-line-gutter"
-                )
+                gutter_style = self.get_component_rich_style("text-editor--active-line-gutter")
             else:
                 gutter_style = self.get_component_rich_style("text-editor--gutter")
 
@@ -459,18 +441,14 @@ TextEditor > .text-editor--selection {
     def gutter_width(self) -> int:
         # The longest number in the gutter plus two extra characters: `│ `.
         gutter_margin = 2
-        gutter_longest_number = (
-            len(str(len(self.document_lines) + 1)) + gutter_margin
-            if self.show_line_numbers
-            else 0
-        )
+        gutter_longest_number = len(str(len(self.document_lines) + 1)) + gutter_margin if self.show_line_numbers else 0
         return gutter_longest_number
 
     # --- Syntax highlighting
     def _prepare_highlights(
         self,
         start_point: tuple[int, int] | None = None,
-        end_point: tuple[int, int] = None,
+        end_point: tuple[int, int] | None = None,
     ) -> None:
         # TODO - we're ignoring get changed ranges for now. Either I'm misunderstanding
         #  it or I've made a mistake somewhere with AST editing.
@@ -495,25 +473,17 @@ TextEditor > .text-editor--selection {
             node_end_row, node_end_column = node.end_point
 
             if node_start_row == node_end_row:
-                highlight = Highlight(
-                    node_start_column, node_end_column, highlight_name
-                )
+                highlight = Highlight(node_start_column, node_end_column, highlight_name)
                 highlight_updates[node_start_row].append(highlight)
             else:
                 # Add the first line
-                highlight_updates[node_start_row].append(
-                    Highlight(node_start_column, None, highlight_name)
-                )
+                highlight_updates[node_start_row].append(Highlight(node_start_column, None, highlight_name))
                 # Add the middle lines - entire row of this node is highlighted
                 for node_row in range(node_start_row + 1, node_end_row):
-                    highlight_updates[node_row].append(
-                        Highlight(0, None, highlight_name)
-                    )
+                    highlight_updates[node_row].append(Highlight(0, None, highlight_name))
 
                 # Add the last line
-                highlight_updates[node_end_row].append(
-                    Highlight(0, node_end_column, highlight_name)
-                )
+                highlight_updates[node_end_row].append(Highlight(0, node_end_column, highlight_name))
 
         for line_index, updated_highlights in highlight_updates.items():
             highlights[line_index] = updated_highlights
@@ -558,16 +528,12 @@ TextEditor > .text-editor--selection {
             return
 
         target_x = max(offset.x - self.gutter_width + int(self.scroll_x), 0)
-        target_row = clamp(
-            offset.y + int(self.scroll_y), 0, len(self.document_lines) - 1
-        )
+        target_row = clamp(offset.y + int(self.scroll_y), 0, len(self.document_lines) - 1)
         target_column = self.cell_width_to_column_index(target_x, target_row)
 
         return target_row, target_column
 
-    def _fix_direction(
-        self, start: tuple[int, int], end: tuple[int, int]
-    ) -> tuple[tuple[int, int], tuple[int, int]]:
+    def _fix_direction(self, start: tuple[int, int], end: tuple[int, int]) -> tuple[tuple[int, int], tuple[int, int]]:
         """Given a range, return a new range (x, y) such that x <= y which covers the same characters."""
         if start > end:
             return end, start
@@ -767,9 +733,7 @@ TextEditor > .text-editor--selection {
 
         target_row = min(len(self.document_lines) - 1, cursor_row + 1)
         # Attempt to snap last intentional cell length
-        target_column = self.cell_width_to_column_index(
-            self._last_intentional_cell_width, target_row
-        )
+        target_column = self.cell_width_to_column_index(self._last_intentional_cell_width, target_row)
         target_column = clamp(target_column, 0, len(self.document_lines[target_row]))
         return target_row, target_column
 
@@ -790,9 +754,7 @@ TextEditor > .text-editor--selection {
         cursor_row, cursor_column = self.selection.end
         target_row = max(0, cursor_row - 1)
         # Attempt to snap last intentional cell length
-        target_column = self.cell_width_to_column_index(
-            self._last_intentional_cell_width, target_row
-        )
+        target_column = self.cell_width_to_column_index(self._last_intentional_cell_width, target_row)
         target_column = clamp(target_column, 0, len(self.document_lines[target_row]))
         return target_row, target_column
 
@@ -873,9 +835,7 @@ TextEditor > .text-editor--selection {
         self._last_intentional_cell_width = column_cell_length
 
     # --- Editor operations
-    def insert_text(
-        self, text: str, position: tuple[int, int], move_cursor: bool = True
-    ) -> None:
+    def insert_text(self, text: str, position: tuple[int, int], move_cursor: bool = True) -> None:
         self.edit(Insert(text, position, position, move_cursor))
 
     def insert_text_range(
@@ -936,9 +896,7 @@ TextEditor > .text-editor--selection {
                 old_end_point=to_position,
                 new_end_point=cursor_destination,
             )
-            self._syntax_tree = self._parser.parse(
-                self._read_callable, self._syntax_tree
-            )
+            self._syntax_tree = self._parser.parse(self._read_callable, self._syntax_tree)
             self._prepare_highlights()
         self._refresh_size()
         if move_cursor:
@@ -1048,9 +1006,7 @@ TextEditor > .text-editor--selection {
                 old_end_point=to_position,
                 new_end_point=from_position,
             )
-            self._syntax_tree = self._parser.parse(
-                self._read_callable, self._syntax_tree
-            )
+            self._syntax_tree = self._parser.parse(self._read_callable, self._syntax_tree)
             self._prepare_highlights()
 
         self._refresh_size()
@@ -1193,7 +1149,7 @@ TextEditor > .text-editor--selection {
         highlight_cache_current_row_size: int
         highlight_cache_current_row: list[Highlight]
 
-    def debug_state(self) -> "EditorDebug":
+    def debug_state(self) -> EditorDebug:
         return self.EditorDebug(
             cursor=self.selection,
             language=self.language,
@@ -1206,19 +1162,15 @@ TextEditor > .text-editor--selection {
             active_line_text=repr(self.active_line_text),
             active_line_cell_len=cell_len(self.active_line_text),
             highlight_cache_key_count=len(self._highlights),
-            highlight_cache_total_size=sum(
-                len(highlights) for key, highlights in self._highlights.items()
-            ),
-            highlight_cache_current_row_size=len(
-                self._highlights[self.selection.end[0]]
-            ),
+            highlight_cache_total_size=sum(len(highlights) for key, highlights in self._highlights.items()),
+            highlight_cache_current_row_size=len(self._highlights[self.selection.end[0]]),
             highlight_cache_current_row=self._highlights[self.selection.end[0]],
         )
 
 
 def traverse_tree(cursor):
     reached_root = False
-    while reached_root == False:
+    while reached_root is False:
         yield cursor.node
 
         if cursor.goto_first_child():
