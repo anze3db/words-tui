@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: words-tui",
             "type": "python",
             "request": "launch",
-            "program": "src/words_tui/tui/app.py",
+            "program": "src/words_tui/__main__.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
