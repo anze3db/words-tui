@@ -16,7 +16,7 @@
 
 ## 🎬 Demo
 
-https://github.com/anze3db/words-tui/assets/513444/a6a2d15c-f5ad-4e2a-a343-ffe7abfdb582
+https://github.com/anze3db/words-tui/assets/513444/5f064606-384f-471d-8990-f4681dfff29c
 
 ## Installation
 
