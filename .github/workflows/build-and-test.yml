@@ -31,3 +31,5 @@ jobs:
       run: hatch build
     - name: Test
       run: hatch run test
+    - name: Find env
+      run: hatch env find
