@@ -4,6 +4,7 @@
 
 [![PyPI - Version](https://img.shields.io/pypi/v/words-tui.svg)](https://pypi.org/project/words-tui)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/words-tui.svg)](https://pypi.org/project/words-tui)
+[![Build and Test](https://github.com/anze3db/words-tui/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/anze3db/words-tui/actions/workflows/build-and-test.yml)
 
 -----
 
