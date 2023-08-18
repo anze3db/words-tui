@@ -147,6 +147,8 @@ class WordsPerMinuteCounter:
         self.stats.save()
 
     def get_wpm(self) -> str:
+        if self.last_char_written == 0:
+            return "Not started"
         if self.paused:
             return "Paused"
         if not self.stats:
