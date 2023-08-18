@@ -4,6 +4,7 @@ import time
 from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
+from textual.css.query import NoMatches
 from textual.screen import ModalScreen
 from textual.validation import Number
 from textual.widgets import Footer, Input, Label, Static
@@ -149,9 +150,7 @@ class WordsPerMinuteCounter:
     def get_wpm(self) -> str:
         if self.last_char_written == 0:
             return "Not started"
-        if self.paused:
-            return "Paused"
-        if not self.stats:
+        if self.paused or not self.stats:
             return "Paused"
         if self.time_writing < 10:
             return "~"
@@ -199,7 +198,7 @@ class WordsTui(App):
         self.words_per_minute.update_words()
         try:
             wpm = self.query_one("#wpm")
-        except:
+        except NoMatches:
             return
         wpm.update(f"WPM: {self.words_per_minute.get_wpm()}")
 
