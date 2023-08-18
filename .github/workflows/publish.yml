@@ -25,6 +25,8 @@ jobs:
         pip install hatch
     - name: Build package
       run: hatch build
+    - name: Test package
+      run: hatch run test
     - name: Publish package
       env:
         HATCH_INDEX_AUTH: ${{ secrets.HATCH_INDEX_AUTH }}
