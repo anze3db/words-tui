@@ -19,7 +19,7 @@ pipx install words-tui
 ```
 
 ### Added
- * Words Per Minute counter 
+ * Words Per Minute (WPM) counter
 
 ## [23.3] - 2023-08-11
 
