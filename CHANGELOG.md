@@ -9,30 +9,12 @@ and this project adheres to [Calendar Versioning](https://calver.org).
 
 We now have a WPM counter!
 
-Upgrade
-```console
-pipx upgrade words-tui
-```
-Install
-```console
-pipx install words-tui
-```
-
 ### Added
  * Words Per Minute (WPM) counter
 
 ## [23.3] - 2023-08-11
 
 You can now configure the daily words goal setting.
-
-Upgrade
-```console
-pipx upgrade words-tui
-```
-Install
-```console
-pipx install words-tui
-```
 
 ### Added
 * Ability to configure the daily words goal
