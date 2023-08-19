@@ -12,6 +12,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    environment: release
+    permissions:
+      id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python
@@ -27,8 +31,5 @@ jobs:
       run: hatch build
     - name: Test package
       run: hatch run test
-    - name: Publish package
-      env:
-        HATCH_INDEX_AUTH: ${{ secrets.HATCH_INDEX_AUTH }}
-        HATCH_INDEX_USER: ${{ secrets.HATCH_INDEX_USER }}
-      run: hatch publish
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
