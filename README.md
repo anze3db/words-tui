@@ -1,3 +1,6 @@
+
+![Screenshot 2023-08-24 at 08 13 47](https://github.com/anze3db/words-tui/assets/513444/021d5cd8-da5d-43b6-8747-ff1c1cb31d6e)
+
 # words-tui
 
 `words-tui` is an app for daily writing in your terminal, built with [Textual](https://github.com/Textualize/textual).
